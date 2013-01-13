@@ -35,99 +35,98 @@
 (defvar txl-mode-hook nil "Normal hook run when entering TXL mode.")
 
 ; syntax table -----------------------------------------------------------------
-(defvar txl-mode-syntax-table nil "Syntax table used while in TXL mode.")
-(if txl-mode-syntax-table ()
-  (setq txl-mode-syntax-table (make-syntax-table))
-  (modify-syntax-entry ?' "'" txl-mode-syntax-table)   ; apostrophe quotes
-  (modify-syntax-entry ?_ "w" txl-mode-syntax-table)   ; underscore is part of words
-  (modify-syntax-entry ?% "<" txl-mode-syntax-table)   ; percent starts comments
-  (modify-syntax-entry ?\n ">" txl-mode-syntax-table)) ; newline ends comments
+(defvar txl-mode-syntax-table
+  (let ((table (make-syntax-table)))
+    (modify-syntax-entry ?'  "'" table)  ; apostrophe quotes
+    (modify-syntax-entry ?_  "w" table)  ; underscore is part of words
+    (modify-syntax-entry ?%  "<" table)  ; percent starts comments
+    (modify-syntax-entry ?\n ">" table)  ; newline ends comments
+    table)
+  "Syntax table used while in TXL mode.")
 
 ; syntax highlighting ----------------------------------------------------------
-(defvar txl-mode-keywords nil "Keywords for font-lock-mode used while in TXL mode.")
-(if txl-mode-keywords ()
-  (setq txl-mode-keywords
-	(list
-	 ;; preprocessor directives
-	 (list "^[ 	]*#[a-z][a-z]*" 0 'font-lock-preprocessor-face)
-	 ;; quoted literal symbol
-	 (list "'[^]	 ]+" 0 'font-lock-reference-face)
-	 ;; builtin rules (with parameters)
-	 (list "\\[\\([\\+-\\*/:#_\\.^,=><\\$]\\|div\\|rem\\|index\\|length\\|select\\|head\\|tail\\|~=\\|>=\\|<=\\|grep\\|quote\\|unquote\\|parse\\|unparse\\|reparse\\|read\\|write\\|fget\\|getp\\|fput\\|putp\\|fputp\\|fclose\\|message\\|pragma\\|quit\\|system\\|pipe\\)[ 	]+" 1 'font-lock-builtin-face)
-	 ;; builtin rules (without parameters) and predefined nonterminal types
-	 (list "\\[\\(!\\|get\\|put\\|print\\|printattr\\|debug\\|breakpoint\\|id\\|number\\|stringlit\\|charlit\\|comment\\|space\\|newline\\|upperlowerid\\|upperid\\|lowerupperid\\|lowerid\\|floatnumber\\|decimalnumber\\|integernumber\\|empty\\|key\\|token\\|any\\)\\]" 1 'font-lock-builtin-face)
-	 ;; formatting tokens (without number)
-	 (list "\\[\\(NL\\|IN\\|EX\\|TAB\\|SP\\|SPOFF\\|SPON\\|KEEP\\)\\]" 0 'font-lock-comment-face)
-	 ;; formatting tokens (with number)
-	 (list "\\[\\(IN\\|EX\\|TAB\\|SP\\)_[1-9][0-9]*\\]" 0 'font-lock-comment-face)
-	 ;; type keywords
-	 (list "\\<\\(attr\\|list\\|opt\\|repeat\\|see\\)\\>" 1 'font-lock-type-face)
-	 ;; other keywords
-	 (list "\\<\\(all\\|assert\\|by\\|comments\\|compounds\\|construct\\|deconstruct\\|define\\|each\\|end\\|export\\|external\\|function\\|import\\|include\\|keys\\|match\\|not\\|redefine\\|replace\\|rule\\|skipping\\|tokens\\|where\\)\\>" 1 'font-lock-keyword-face)
-	 ;; number
-	 (list "\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 'font-lock-reference-face)
-	 )))
+(defvar txl-mode-keywords
+  (list
+   ;; preprocessor directives
+   (list "^[ 	]*#[a-z][a-z]*" 0 'font-lock-preprocessor-face)
+   ;; quoted literal symbol
+   (list "'[^]	 ]+" 0 'font-lock-reference-face)
+   ;; builtin rules (with parameters)
+   (list "\\[\\([\\+-\\*/:#_\\.^,=><\\$]\\|div\\|rem\\|index\\|length\\|select\\|head\\|tail\\|~=\\|>=\\|<=\\|grep\\|quote\\|unquote\\|parse\\|unparse\\|reparse\\|read\\|write\\|fget\\|getp\\|fput\\|putp\\|fputp\\|fclose\\|message\\|pragma\\|quit\\|system\\|pipe\\)[ 	]+" 1 'font-lock-builtin-face)
+   ;; builtin rules (without parameters) and predefined nonterminal types
+   (list "\\[\\(!\\|get\\|put\\|print\\|printattr\\|debug\\|breakpoint\\|id\\|number\\|stringlit\\|charlit\\|comment\\|space\\|newline\\|upperlowerid\\|upperid\\|lowerupperid\\|lowerid\\|floatnumber\\|decimalnumber\\|integernumber\\|empty\\|key\\|token\\|any\\)\\]" 1 'font-lock-builtin-face)
+   ;; formatting tokens (without number)
+   (list "\\[\\(NL\\|IN\\|EX\\|TAB\\|SP\\|SPOFF\\|SPON\\|KEEP\\)\\]" 0 'font-lock-comment-face)
+   ;; formatting tokens (with number)
+   (list "\\[\\(IN\\|EX\\|TAB\\|SP\\)_[1-9][0-9]*\\]" 0 'font-lock-comment-face)
+   ;; type keywords
+   (list "\\<\\(attr\\|list\\|opt\\|repeat\\|see\\)\\>" 1 'font-lock-type-face)
+   ;; other keywords
+   (list "\\<\\(all\\|assert\\|by\\|comments\\|compounds\\|construct\\|deconstruct\\|define\\|each\\|end\\|export\\|external\\|function\\|import\\|include\\|keys\\|match\\|not\\|redefine\\|replace\\|rule\\|skipping\\|tokens\\|where\\)\\>" 1 'font-lock-keyword-face)
+   ;; number
+   (list "\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 'font-lock-reference-face))
+  "Keywords for font-lock-mode used while in TXL mode.")
 
 ; abbreviations ----------------------------------------------------------------
-(defvar txl-mode-abbrev-table nil "Abbrev table used while in TXL mode.")
-(if txl-mode-abbrev-table ()
-  (setq txl-mode-abbrev-table (make-abbrev-table))
-  (define-abbrev txl-mode-abbrev-table "ass" "assert" nil)
-  (define-abbrev txl-mode-abbrev-table "com" "comments" nil)
-  (define-abbrev txl-mode-abbrev-table "cmp" "compounds" nil)
-  (define-abbrev txl-mode-abbrev-table "con" "construct" nil)
-  (define-abbrev txl-mode-abbrev-table "dec" "deconstruct" nil)
-  (define-abbrev txl-mode-abbrev-table "def" "define" nil)
-  (define-abbrev txl-mode-abbrev-table "exp" "export" nil)
-  (define-abbrev txl-mode-abbrev-table "ext" "external" nil)
-  (define-abbrev txl-mode-abbrev-table "fun" "function" nil)
-  (define-abbrev txl-mode-abbrev-table "imp" "import" nil)
-  (define-abbrev txl-mode-abbrev-table "inc" "include" nil)
-  (define-abbrev txl-mode-abbrev-table "red" "redefine" nil)
-  (define-abbrev txl-mode-abbrev-table "rpt" "repeat" nil)
-  (define-abbrev txl-mode-abbrev-table "rep" "replace" nil)
-  (define-abbrev txl-mode-abbrev-table "ski" "skipping" nil)
-  (define-abbrev txl-mode-abbrev-table "tok" "tokens" nil))
+(defvar txl-mode-abbrev-table
+  (let ((table (make-abbrev-table)))
+    (define-abbrev table "ass" "assert" nil)
+    (define-abbrev table "com" "comments" nil)
+    (define-abbrev table "cmp" "compounds" nil)
+    (define-abbrev table "con" "construct" nil)
+    (define-abbrev table "dec" "deconstruct" nil)
+    (define-abbrev table "def" "define" nil)
+    (define-abbrev table "exp" "export" nil)
+    (define-abbrev table "ext" "external" nil)
+    (define-abbrev table "fun" "function" nil)
+    (define-abbrev table "imp" "import" nil)
+    (define-abbrev table "inc" "include" nil)
+    (define-abbrev table "red" "redefine" nil)
+    (define-abbrev table "rpt" "repeat" nil)
+    (define-abbrev table "rep" "replace" nil)
+    (define-abbrev table "ski" "skipping" nil)
+    (define-abbrev table "tok" "tokens" nil)
+    table)
+  "Abbrev table used while in TXL mode.")
 
 ; keyboard shortcuts -----------------------------------------------------------
-(defvar txl-mode-map nil "Keymap for TXL mode.")
-(if txl-mode-map ()
-  (setq txl-mode-map (make-sparse-keymap))
-  (if (functionp 'set-keymap-name)
-      (set-keymap-name txl-mode-map 'txl-mode-map))
-  (define-key txl-mode-map "\C-cc" 'comment-region)
-  (define-key txl-mode-map "\C-cu" 'txl-mode-uncomment-region)
-  (define-key txl-mode-map "\C-cd" 'txl-mode-insert-define)
-  (define-key txl-mode-map "\C-cf" 'txl-mode-insert-function)
-  (define-key txl-mode-map "\C-cr" 'txl-mode-insert-rule)
-  (define-key txl-mode-map "\C-c\C-e" 'txl-mode-insert-end)
-  (define-key txl-mode-map "\C-c\C-c" 'txl-mode-compile)
-  (define-key txl-mode-map "\C-c\C-d" 'txl-mode-debug)
-  (define-key txl-mode-map "\C-c\C-r" 'txl-mode-run)
-  (define-key txl-mode-map "\C-i" 'txl-mode-indent-line)
-  (define-key txl-mode-map "\C-C\C-i" 'indent-region))
+(defvar txl-mode-map
+  (let ((map (make-sparse-keymap)))
+    (if (functionp 'set-keymap-name)
+        (set-keymap-name map 'txl-mode-map))
+    (define-key map "\C-cc" 'comment-region)
+    (define-key map "\C-cu" 'txl-mode-uncomment-region)
+    (define-key map "\C-cd" 'txl-mode-insert-define)
+    (define-key map "\C-cf" 'txl-mode-insert-function)
+    (define-key map "\C-cr" 'txl-mode-insert-rule)
+    (define-key map "\C-c\C-e" 'txl-mode-insert-end)
+    (define-key map "\C-c\C-c" 'txl-mode-compile)
+    (define-key map "\C-c\C-d" 'txl-mode-debug)
+    (define-key map "\C-c\C-r" 'txl-mode-run)
+    (define-key map "\C-i" 'txl-mode-indent-line)
+    (define-key map "\C-C\C-i" 'indent-region)
+    map)
+  "Keymap for TXL mode.")
 
 ; menubar ----------------------------------------------------------------------
-(defvar txl-mode-menubar-menu nil "TXL menu.")
-(if txl-mode-menubar-menu ()
-  (setq txl-mode-menubar-menu
-	'("T%_XL"
-	  ["Ru%_n " txl-mode-run :suffix (concat (txl-mode-get-name nil) "...")]
-	  ["De%_bug " txl-mode-debug :suffix (concat (txl-mode-get-name nil) "...")]
-	  ["Com%_pile " txl-mode-compile :suffix (txl-mode-get-name nil)]
-	  "--"
-	  ["%_Indent Region" indent-region :active (region-exists-p)]
-	  ["%_Comment Region"    comment-region :active (region-exists-p)]
-	  ["%_Uncomment Region"  txl-mode-uncomment-region (region-exists-p)]
-	  "--"
-	  ["Insert %_Define" txl-mode-insert-define]
-	  ["Insert %_Function" txl-mode-insert-function]
-	  ["Insert %_Rule" txl-mode-insert-rule]
-	  ["%_End Block" txl-mode-insert-end :active (txl-mode-block)]
-	  "--"
-	  ["Use %_Abbreviations" (setq abbrev-mode (not abbrev-mode))
-	   :style toggle :selected abbrev-mode]
-)))
+(defvar txl-mode-menubar-menu
+  '("T%_XL"
+    ["Ru%_n " txl-mode-run :suffix (concat (txl-mode-get-name nil) "...")]
+    ["De%_bug " txl-mode-debug :suffix (concat (txl-mode-get-name nil) "...")]
+    ["Com%_pile " txl-mode-compile :suffix (txl-mode-get-name nil)]
+    "--"
+    ["%_Indent Region" indent-region :active (region-exists-p)]
+    ["%_Comment Region"    comment-region :active (region-exists-p)]
+    ["%_Uncomment Region"  txl-mode-uncomment-region (region-exists-p)]
+    "--"
+    ["Insert %_Define" txl-mode-insert-define]
+    ["Insert %_Function" txl-mode-insert-function]
+    ["Insert %_Rule" txl-mode-insert-rule]
+    ["%_End Block" txl-mode-insert-end :active (txl-mode-block)]
+    "--"
+    ["Use %_Abbreviations" (setq abbrev-mode (not abbrev-mode))
+     :style toggle :selected abbrev-mode])
+  "TXL menu.")
 
 ;(defvar txl-mode-input-file "nil" "Name of the last given input file for TXL programs.")
 
