@@ -50,7 +50,7 @@
     ;; preprocessor directives
     ("^[[:space:]]*#[a-z]+" 0 font-lock-preprocessor-face)
     ;; quoted literal symbol
-    ("'[^]\t ]+" 0 font-lock-reference-face)
+    ("'[^]\t ]+" 0 font-lock-constant-face)
     ;; builtin rules (with parameters)
     (,(concat "\\[\\(\\(?:[\\+-\\*/:#_\\.^,=><\\$]\\|"
               (regexp-opt
@@ -87,7 +87,7 @@
                   'words)
      1 font-lock-keyword-face)
     ;; number
-    ("\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 font-lock-reference-face))
+    ("\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 font-lock-constant-face))
   "Keywords for font-lock-mode used while in TXL mode.")
 
 ; abbreviations ----------------------------------------------------------------
