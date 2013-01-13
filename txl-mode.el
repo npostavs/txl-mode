@@ -46,25 +46,48 @@
 
 ; syntax highlighting ----------------------------------------------------------
 (defvar txl-mode-keywords
-  (list
-   ;; preprocessor directives
-   (list "^[ 	]*#[a-z][a-z]*" 0 'font-lock-preprocessor-face)
-   ;; quoted literal symbol
-   (list "'[^]	 ]+" 0 'font-lock-reference-face)
-   ;; builtin rules (with parameters)
-   (list "\\[\\([\\+-\\*/:#_\\.^,=><\\$]\\|div\\|rem\\|index\\|length\\|select\\|head\\|tail\\|~=\\|>=\\|<=\\|grep\\|quote\\|unquote\\|parse\\|unparse\\|reparse\\|read\\|write\\|fget\\|getp\\|fput\\|putp\\|fputp\\|fclose\\|message\\|pragma\\|quit\\|system\\|pipe\\)[ 	]+" 1 'font-lock-builtin-face)
-   ;; builtin rules (without parameters) and predefined nonterminal types
-   (list "\\[\\(!\\|get\\|put\\|print\\|printattr\\|debug\\|breakpoint\\|id\\|number\\|stringlit\\|charlit\\|comment\\|space\\|newline\\|upperlowerid\\|upperid\\|lowerupperid\\|lowerid\\|floatnumber\\|decimalnumber\\|integernumber\\|empty\\|key\\|token\\|any\\)\\]" 1 'font-lock-builtin-face)
-   ;; formatting tokens (without number)
-   (list "\\[\\(NL\\|IN\\|EX\\|TAB\\|SP\\|SPOFF\\|SPON\\|KEEP\\)\\]" 0 'font-lock-comment-face)
-   ;; formatting tokens (with number)
-   (list "\\[\\(IN\\|EX\\|TAB\\|SP\\)_[1-9][0-9]*\\]" 0 'font-lock-comment-face)
-   ;; type keywords
-   (list "\\<\\(attr\\|list\\|opt\\|repeat\\|see\\)\\>" 1 'font-lock-type-face)
-   ;; other keywords
-   (list "\\<\\(all\\|assert\\|by\\|comments\\|compounds\\|construct\\|deconstruct\\|define\\|each\\|end\\|export\\|external\\|function\\|import\\|include\\|keys\\|match\\|not\\|redefine\\|replace\\|rule\\|skipping\\|tokens\\|where\\)\\>" 1 'font-lock-keyword-face)
-   ;; number
-   (list "\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 'font-lock-reference-face))
+  `(
+    ;; preprocessor directives
+    ("^[[:space:]]*#[a-z]+" 0 font-lock-preprocessor-face)
+    ;; quoted literal symbol
+    ("'[^]\t ]+" 0 font-lock-reference-face)
+    ;; builtin rules (with parameters)
+    (,(concat "\\[\\(\\(?:[\\+-\\*/:#_\\.^,=><\\$]\\|"
+              (regexp-opt
+               '("div" "rem" "index" "length" "select" "head" "tail" "~=" ">="
+                 "<=" "grep" "quote" "unquote" "parse" "unparse" "reparse"
+                 "read" "write" "fget" "getp" "fput" "putp" "fputp" "fclose"
+                 "message" "pragma" "quit" "system" "pipe"))
+              "\\)\\)[[:space:]]+")
+     1 font-lock-builtin-face)
+    ;; builtin rules (without parameters) and predefined nonterminal types
+    (,(concat "\\["
+              (regexp-opt
+               '("!" "get" "put" "print" "printattr" "debug" "breakpoint" "id"
+                 "number" "stringlit" "charlit" "comment" "space" "newline"
+                 "upperlowerid" "upperid" "lowerupperid" "lowerid"
+                 "floatnumber" "decimalnumber" "integernumber"
+                 "empty" "key" "token" "any") t))
+     1 font-lock-builtin-face)
+    ;; formatting tokens (without number)
+    (,(concat "\\[\\(?:"
+              (regexp-opt '("NL" "IN" "EX" "TAB" "SP" "SPOFF" "SPON" "KEEP"))
+              "\\)\\]")
+     0 font-lock-comment-face)
+    ;; formatting tokens (with number)
+    ("\\[\\(IN\\|EX\\|TAB\\|SP\\)_[1-9][0-9]*\\]" 0 font-lock-comment-face)
+    ;; type keywords
+    (,(regexp-opt '("attr" "list" "opt" "repeat" "see") 'words)
+     1 font-lock-type-face)
+    ;; other keywords
+    (,(regexp-opt '("all" "assert" "by" "comments" "compounds" "construct"
+                    "deconstruct" "define" "each" "end" "export" "external"
+                    "function" "import" "include" "keys" "match" "not"
+                    "redefine" "replace" "rule" "skipping" "tokens" "where")
+                  'words)
+     1 font-lock-keyword-face)
+    ;; number
+    ("\\<[0-9]+\\([.][0-9]+\\)?\\([eE][-+]?[0-9]+\\)?\\>" 0 font-lock-reference-face))
   "Keywords for font-lock-mode used while in TXL mode.")
 
 ; abbreviations ----------------------------------------------------------------
