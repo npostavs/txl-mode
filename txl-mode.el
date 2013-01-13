@@ -50,7 +50,7 @@
     ;; preprocessor directives
     ("^[[:space:]]*#[a-z]+" 0 font-lock-preprocessor-face)
     ;; quoted literal symbol
-    ("'[^]\t ]+" 0 font-lock-constant-face)
+    ("'[^]\t\n ]+" 0 font-lock-constant-face)
     ;; builtin rules (with parameters)
     (,(concat "\\[\\(\\(?:[\\+-\\*/:#_\\.^,=><\\$]\\|"
               (regexp-opt
