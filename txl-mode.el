@@ -47,6 +47,9 @@
     (?_ . "w"))                      ; don't highlight keyword_foo
   "Syntax used for highlighting TXL")
 
+(defvar txl-mode-font-lock-syntactic-keywords
+  '(("\"[^\"]*\\('\\)\"" 1 ".")))    ; ' doesn't escape inside strings
+
 ; syntax highlighting ----------------------------------------------------------
 (defvar txl-mode-keywords
   `(
@@ -172,7 +175,13 @@ Turning on TXL mode runs the normal hook `txl-mode-hook'."
   (set-syntax-table txl-mode-syntax-table)
   (if (featurep 'xemacs)
       (setq font-lock-keywords txl-mode-keywords) ;; XEmacs
-    (setq font-lock-defaults `(txl-mode-keywords nil nil ,txl-mode-font-lock-syntax-alist nil))) ;; Emacs
+    (setq font-lock-defaults                      ;; Emacs
+          `(txl-mode-keywords
+            nil nil
+            ,txl-mode-font-lock-syntax-alist
+            nil
+            (font-lock-syntactic-keywords
+             . ,txl-mode-font-lock-syntactic-keywords))))
   (setq local-abbrev-table txl-mode-abbrev-table)
   (setq abbrev-mode t)
   (use-local-map txl-mode-map)
