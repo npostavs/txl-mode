@@ -18,7 +18,6 @@
 
 ;; Wish list:
 ;  - navigation (jump to nonterminal/function/rule under cursor, next/previous nonterminal/function/rule, ...)
-;  - remember last entered input file and use this as default value for next run/debug
 ;  - use comint for run/debug/compile instead of simple shell-command? (which looks ugly under Windows)
 
 ;; Known bugs:
@@ -157,7 +156,8 @@
      :style toggle :selected abbrev-mode])
   "TXL menu.")
 
-;(defvar txl-mode-input-file "nil" "Name of the last given input file for TXL programs.")
+(defvar txl-mode-input-file '()
+  "The last input file used for `txl-mode-run' and `txl-mode-debug'")
 
 
 (defun txl-mode () ; -----------------------------------------------------------
@@ -166,6 +166,7 @@
 Turning on TXL mode runs the normal hook `txl-mode-hook'."
   (interactive)
   (kill-all-local-variables)
+  (make-local-variable 'txl-mode-input-file)
   (make-local-variable 'indent-line-function)
   (setq indent-line-function 'txl-mode-indent-line)
   (make-local-variable 'comment-start)
@@ -236,16 +237,17 @@ Turning on TXL mode runs the normal hook `txl-mode-hook'."
 
 (defun txl-mode-debug (input-file)
   "Ask input file from user and debug TXL program."
-  (interactive "fInput file: ")
+  (interactive (list (read-file-name "Input file: " nil txl-mode-input-file t)))
+  (setq txl-mode-input-file input-file)
   (shell-command (concat "txldb " input-file " " (txl-mode-get-name t) " &") "*TXL Debug*")
   (other-window 1)
   (end-of-buffer))
 
 (defun txl-mode-run (input-file)
   "Ask input file from user and run TXL program."
-  (interactive "fInput file: ")
-;  (setq txl-mode-input-file input-file)
-    (shell-command (concat "txl " input-file " " (txl-mode-get-name t)) "*TXL Output*"))
+  (interactive (list (read-file-name "Input file: " nil txl-mode-input-file t)))
+  (setq txl-mode-input-file input-file)
+  (shell-command (concat "txl " input-file " " (txl-mode-get-name t)) "*TXL Output*"))
 
 (defvar txl-mode-extension-regexp
   "[tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?"
