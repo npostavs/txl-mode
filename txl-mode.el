@@ -22,7 +22,6 @@
 ;  - use comint for run/debug/compile instead of simple shell-command? (which looks ugly under Windows)
 
 ;; Known bugs:
-;  - '% is highlighted as comment
 ;  - compile and debug don't work under Windows
 
 ;; Oct 16 2008, Ivan N. Veselov <veselov@gmail.com>
@@ -38,11 +37,15 @@
 (defvar txl-mode-syntax-table
   (let ((table (make-syntax-table)))
     (modify-syntax-entry ?'  "'" table)  ; apostrophe quotes
-    (modify-syntax-entry ?_  "w" table)  ; underscore is part of words
     (modify-syntax-entry ?%  "<" table)  ; percent starts comments
     (modify-syntax-entry ?\n ">" table)  ; newline ends comments
     table)
   "Syntax table used while in TXL mode.")
+
+(defvar txl-mode-font-lock-syntax-alist
+  '((?' . "/")                       ; ' escapes keywords and comments
+    (?_ . "w"))                      ; don't highlight keyword_foo
+  "Syntax used for highlighting TXL")
 
 ; syntax highlighting ----------------------------------------------------------
 (defvar txl-mode-keywords
@@ -169,7 +172,7 @@ Turning on TXL mode runs the normal hook `txl-mode-hook'."
   (set-syntax-table txl-mode-syntax-table)
   (if (featurep 'xemacs)
       (setq font-lock-keywords txl-mode-keywords) ;; XEmacs
-    (setq font-lock-defaults '(txl-mode-keywords nil nil nil nil))) ;; Emacs
+    (setq font-lock-defaults `(txl-mode-keywords nil nil ,txl-mode-font-lock-syntax-alist nil))) ;; Emacs
   (setq local-abbrev-table txl-mode-abbrev-table)
   (setq abbrev-mode t)
   (use-local-map txl-mode-map)
