@@ -247,18 +247,21 @@ Turning on TXL mode runs the normal hook `txl-mode-hook'."
 ;  (setq txl-mode-input-file input-file)
     (shell-command (concat "txl " input-file " " (txl-mode-get-name t)) "*TXL Output*"))
 
+(defvar txl-mode-extension-regexp
+  "[tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?"
+  "A regexp that matches filename extensions used by TXL")
+
 (defun txl-mode-get-name (full)
   "If buffer file name has ending used by TXL, return base name
 and ending `.Txl', otherwise return unchanged. The argument controls whether full path
 is included or not."
-  (let* ((txl-file-split) (txl-file-end))
-    (if full
-	(setq txl-file-split (split-string-by-char buffer-file-name ?.))
-      (setq txl-file-split (split-string-by-char (buffer-name) ?.)))
-    (setq txl-file-end (car (last txl-file-split)))
-    (if (string-match "[tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?" txl-file-end)
-	(setq txl-file-end "Txl"))
-    (concat (mapconcat 'identity (butlast txl-file-split) ".") "." txl-file-end)))
+  (let ((ext (file-name-extension buffer-file-name))
+        (base (file-name-sans-extension (file-name-nondirectory buffer-file-name))))
+    (concat (if full
+                (file-name-directory buffer-file-name) "")
+            base
+            (if (string-match txl-mode-extension-regexp ext)
+                ".Txl" ext))))
 
 ; automatic indentation --------------------------------------------------------
 
