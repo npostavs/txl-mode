@@ -158,6 +158,7 @@
 
 (defvar txl-mode-input-file '()
   "The last input file used for `txl-mode-run' and `txl-mode-debug'")
+(defvar txl-mode-options nil "The last options used for `txl-mode-run'")
 
 
 (defun txl-mode () ; -----------------------------------------------------------
@@ -243,11 +244,17 @@ Turning on TXL mode runs the normal hook `txl-mode-hook'."
   (other-window 1)
   (end-of-buffer))
 
-(defun txl-mode-run (input-file)
-  "Ask input file from user and run TXL program."
-  (interactive (list (read-file-name "Input file: " nil txl-mode-input-file t)))
+(defun txl-mode-run (input-file &optional options)
+  "Ask input file from user and run TXL program. With prefix arg
+ask for extra options as well."
+  (interactive (list (read-file-name "Input file: " nil txl-mode-input-file t)
+                     (when current-prefix-arg
+                       (read-string (format "txl options (%s): " txl-mode-options)
+                                    nil nil txl-mode-options))))
   (setq txl-mode-input-file input-file)
-  (shell-command (concat "txl " input-file " " (txl-mode-get-name t)) "*TXL Output*"))
+  (if options (setq txl-mode-options options)
+    (setq options ""))
+  (shell-command (concat "txl " options " " input-file " " (txl-mode-get-name t)) "*TXL Output*"))
 
 (defvar txl-mode-extension-regexp
   "[tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?"
