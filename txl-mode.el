@@ -35,9 +35,14 @@
 ; syntax table -----------------------------------------------------------------
 (defvar txl-mode-syntax-table
   (let ((table (make-syntax-table)))
-    (modify-syntax-entry ?'  "'" table)  ; apostrophe quotes
-    (modify-syntax-entry ?%  "<" table)  ; percent starts comments
-    (modify-syntax-entry ?\n ">" table)  ; newline ends comments
+    (modify-syntax-entry ?'  "'" table) ; apostrophe quotes
+    ;; % participates in all 3 comment styles %...\n %(...)% %{...}%
+    (modify-syntax-entry ?%  "< 14" table)
+    (modify-syntax-entry ?\n ">" table)
+    (modify-syntax-entry ?\( "()2b" table)
+    (modify-syntax-entry ?\) ")(3b" table)
+    (modify-syntax-entry ?\{ "(}2c" table)
+    (modify-syntax-entry ?\} "){3c" table)
     table)
   "Syntax table used while in TXL mode.")
 
