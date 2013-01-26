@@ -5,13 +5,13 @@
 ;  - put this file into directory where Emacs can find it (within load-path)
 ;  - add following lines to Emacs init file (.emacs or init.el or maybe something else)
 ;  (require 'txl-mode)
-;  (setq auto-mode-alist (cons (quote ("\\.\\([tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?\\)$" . txl-mode)) auto-mode-alist))
+;  (add-to-list 'auto-mode-alist '("\\.\\([tT]xl\\|[gG]rm\\|[gG]rammar\\|[rR]ul\\(es\\)?\\|[mM]od\\(ule\\)?\\)$" . txl-mode))
 
 ;; Features:
 ;  - syntax highlighting (with font-lock-mode)
 ;  - automatic indentation according to TXL style guide (perhaps stil buggy...)
 ;  - compile/debug/run TXL program from within Emacs
-;  - comment/uncomment regions (useful since TXL doesn't have block comments)
+;  - comment/uncomment regions
 ;  - insert skeletion rules/functions/defines, find and insert matching end's
 ;  - abbreviations for keywords (with abbrev-mode; scroll down to see a list)
 ;  - TXL submenu which contains all new functions and their keyboard shortcuts
@@ -21,6 +21,7 @@
 ;  - use comint for run/debug/compile instead of simple shell-command? (which looks ugly under Windows)
 
 ;; Known bugs:
+;  - 'x% is highlighted as comment
 ;  - compile and debug don't work under Windows
 
 ;; Oct 16 2008, Ivan N. Veselov <veselov@gmail.com>
