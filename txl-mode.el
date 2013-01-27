@@ -285,16 +285,19 @@ With argument, indent any additional lines of the same clause
 rigidly along with this one (not yet)."
   (interactive "p")
   (let ((indent (txl-mode-indent-level))
-	(pos (- (point-max) (point))) beg)
-    (beginning-of-line)
-    (setq beg (point))
-    (skip-chars-forward " \t")
-    (if (zerop (- indent (current-column)))
-	nil
+        (pos (point-marker))
+        (beg (line-beginning-position)))
+    (back-to-indentation)
+    (unless (zerop (- indent (current-column)))
       (delete-region beg (point))
       (indent-to indent))
-    (if (> (- (point-max) pos) (point))
-	(goto-char (- (point-max) pos)))))
+    ;; special case for grammar alternative indentation
+    (when (looking-at "|")
+        (forward-char)
+        (just-one-space 3))
+    (when (> (marker-position pos) (point))
+      (goto-char pos))
+    (set-marker pos nil)))
 
 (defun txl-mode-indent-level ()
   "Compute TXL indentation level."
